@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab 9</title>
+
+  <style>
+    button {
+      margin: 3px;
+    }
+
+    input[type="number"] {
+      width: 60px;
+    }
+
+    output {
+      border: 1px solid gray;
+      display: block;
+      height: 18px;
+      margin-top: 5px;
+      padding: 5px;
+      width: 240px;
+    }
+  </style>
+<!--
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "e811be94f77f41c28ea3f8499294ca3e"
+      // for more configuration options, see https://docs.trackjs.com
+    });
+    TrackJS.track('Testing TrackJS!');
+  </script>
+-->           
+</head>
+<body>
+  <fieldset>
+    <legend>Error Calculator</legend>
+    <input type="text"  name="first-num" id="first-num" />
+    <select name="operator" id="operator">
+      <option>+</option>
+      <option>-</option>
+      <option>*</option>
+      <option>/</option>
+    </select>
+    <input type="number" name="second-num" id="second-num" />
+    <button id="calculate">Calculate</button>
+    <br />
+    <output></output>
+  </fieldset>
+
+  <section id="error-btns">
+    <button>Console Log Demo</button>
+    <button>Console Error Demo</button>
+    <button>Console Dir</button>
+    <button>Console dirxml</button>
+    <button>Console Group Start</button>
+    <button>Console Group End</button>
+    <button>Console Table</button>
+    <button>Start Timer</button>
+    <button>End Timer</button>
+    <button>Console Trace</button>
+    <button>Trigger a Global Error</button>
+  </section>
+
+  <script>
+    class Error {
+      constructor(message) {
+        this.message = message;
+        this.name = "Error";
+      }
+    };
+    class ConversionError extends Error {
+      constructor(message) {
+        super(message); // (1)
+        this.name = "Conversion Error"; // (2)
+      }
+    }
+    let calculateBtn = document.querySelector('#calculate');
+    calculateBtn.addEventListener('click', () => {
+      let output = document.querySelector('output');
+      let firstNum = document.querySelector('#first-num').value;
+      let secondNum = document.querySelector('#second-num').value;
+      let operator = document.querySelector('#operator').value;
+      try{
+        // If the the convert to NaN we throw error to our custome error class
+        if(isNaN(firstNum) || isNaN(secondNum)) throw new ConversionError("Value converted to NaN");
+        output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      }catch(error){
+      console.log("Sadly an error happened friend");
+      if (error instanceof ConversionError) console.error(error.name + ": " + error.message);
+      else throw error;
+      }finally{
+        console.log("The error check has been run");
+      }
+    });
+
+    let errorBtns = Array.from(document.querySelectorAll('#error-btns > button')); // all the button
+    // Console Log Demo
+    errorBtns[0].addEventListener('click', () => {
+      console.log("Console Log Demo");
+    });
+
+    // Console Error Demo
+    errorBtns[1].addEventListener('click', () => {
+      console.error("Console Log Error Demo");
+    });
+    // Console Dir
+    errorBtns[2].addEventListener('click', () => {
+      console.dir(document.head);
+    });
+    // Console Dirxml
+    errorBtns[3].addEventListener('click', () => {
+      console.dirxml(document);
+    });
+    
+    const label = "Log Group";
+    // Console Group Start
+    errorBtns[4].addEventListener('click', () => {
+      console.group(label);
+    });
+    // Console Group End
+    errorBtns[5].addEventListener('click', () => {
+      console.groupEnd(label);
+    });
+    // Console Table
+    errorBtns[6].addEventListener('click', () => {
+      console.table([
+        {
+          name: 'SoftWare Engineering',
+          num: '110',
+        },
+        {
+          name: 'Programming Language',
+          num: '130',
+        },
+        {
+          name: 'Advanced SoftWare Engineering',
+          num: '112',
+        }
+      ]);
+    });
+    // Start Timer
+    errorBtns[7].addEventListener('click', () => {
+      console.time();
+    });
+    // End Timer 
+    errorBtns[8].addEventListener('click', () => {
+      console.timeEnd();
+    });
+    // Console Trace
+    errorBtns[9].addEventListener('click', () => {
+      const traceTest = () => { deep(); };
+      const deep = () => { deeper(); };
+      const deeper = () => { deepest(); };
+      const deepest = () => { console.trace(); };
+      traceTest();
+    });
+    // Trigger a Global Error
+    errorBtns[10].addEventListener('click', () => {
+      window.onerror = function(message, source, lineno, colno, error) {
+        console.log("Sadly an error happened friend");
+        console.error(message);
+        return true;
+      };
+      let val = null;
+      console.log(val());
+    });
+
+  </script>
+</body>
+</html>
